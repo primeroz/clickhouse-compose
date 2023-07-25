@@ -1,0 +1,71 @@
+x-logging: &default-logging
+  driver: journald
+  options:
+    tag: '{{.Name}}'
+
+version: '3'
+
+networks:
+  net:
+
+volumes:
+  clickhouse:
+  clickhouse_logs:
+
+services:
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:23
+    container_name: clickhouse
+    logging: *default-logging
+    cpu_count: 3
+    cap_add:
+      - NET_ADMIN
+      - IPC_LOCK
+    #healthcheck:
+    #mem_limit
+    #mem_reservation
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      #- ./clickhouse-server-configs/users.d:/etc/clickhouse-server/users.d
+      #- ./clickhouse-server-configs/config.d:/etc/clickhouse-server/config.d
+      #- ./clickhouse-server-init/:/docker-entrypoint-initdb.d/
+      - clickhouse:/var/lib/clickhouse
+      - clickhouse_logs:/var/lib/clickhouse-server
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 8123:8123
+      - 9000:9000
+      - 9009:9009
+    #links:
+    #  - alertmanager:alertmanager
+    #  - pushgateway:pushgateway
+    #  - blackbox:blackbox
+#    depends_on:
+#      - pushgateway
+    networks:
+      - net
+    restart: on-failure
+
+  jupyter:
+    image: jupyter/datascience-notebook:2023-07-25
+    container_name: jupyter
+    logging: *default-logging
+    #healthcheck:
+    #mem_limit
+    #mem_reservation
+    volumes:
+      - ./jupyter:/home/jovyan/work
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 10000:8888
+    networks:
+      - net
+    restart: on-failure
+
