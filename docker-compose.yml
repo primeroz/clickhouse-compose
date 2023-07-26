@@ -3,6 +3,7 @@ x-logging: &default-logging
   options:
     tag: '{{.Name}}'
 
+
 version: '3'
 
 networks:
@@ -11,6 +12,8 @@ networks:
 volumes:
   clickhouse:
   clickhouse_logs:
+  superset:
+  redis:
 
 services:
 
@@ -69,3 +72,25 @@ services:
       - net
     restart: on-failure
 
+# SUPERSET Containers
+  redis:
+    image: redis:7
+    container_name: superset_cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+
+  superset:
+    env_file: .env
+    build: superset/
+    container_name: superset
+    restart: on-failure
+    ports:
+      - 8088:8088
+    depends_on:
+      - redis
+    volumes: 
+      - ./superset/superset_config.py:/etc/superset/superset_config.py
+      - superset:/var/lib/superse
