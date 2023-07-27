@@ -58,10 +58,16 @@ FROM INFILE '../btc_parquet/date=20*/*' SETTINGS input_format_parquet_allow_miss
 
 ## Jupyter Lab
 
-`**Use port 10000**` instead of `8888`
+Tail logs to get the url with token to login
 
 ### References 
 
 * https://clickhouse.com/docs/en/integrations/jupysql
 * https://jupysql.ploomber.io/en/latest/quick-start.html
 * https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.info.html
+
+## SuperSet
+
+We are using a simple image from `https://github.com/amancevice/docker-superset` and not the microservice version from apache superset itself.
+
+After first start you need to run `docker exec -it superset superset-init`

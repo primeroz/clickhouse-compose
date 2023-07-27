@@ -45,10 +45,6 @@ services:
       - 8123:8123
       - 9000:9000
       - 9009:9009
-    #links:
-    #  - alertmanager:alertmanager
-    #  - pushgateway:pushgateway
-    #  - blackbox:blackbox
 #    depends_on:
 #      - pushgateway
     networks:
@@ -67,7 +63,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - 10000:8888
+      - 8888:8888
     networks:
       - net
     restart: on-failure
